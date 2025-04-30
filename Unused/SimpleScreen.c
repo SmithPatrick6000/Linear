@@ -1,3 +1,4 @@
+#define SDL_MAIN_HANDLED
 #include<SDL.h>
 #include<stdio.h>
 #include<stdbool.h>
@@ -6,9 +7,9 @@
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-//Main that maybe works
+//simpleScreen function that maybe works
 
-int main(int argc, char* args[]){
+int simpleScreen(int argc, char* args[]){
     //The window that will be rendered to
     SDL_Window* window = NULL;
 
