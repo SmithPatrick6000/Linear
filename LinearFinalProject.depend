@@ -455,7 +455,7 @@
 
 1746057489 source:c:\users\thebu\onedrive\desktop\school\intro to systems\programming assignment\linearfinalproject\ball.c
 
-1746078581 source:c:\users\thebu\onedrive\desktop\school\intro to systems\programming assignment\linearfinalproject\main.c
+1746132330 source:c:\users\thebu\onedrive\desktop\school\intro to systems\programming assignment\linearfinalproject\main.c
 	<SDL.h>
 	<stdio.h>
 	<stdbool.h>
@@ -463,9 +463,16 @@
 	<stdlib.h>
 	<time.h>
 	<SDL_ttf.h>
+	<SDL_image.h>
 
 1735850788 c:\mingw_dev_lib\sdl2_tff\include\sdl2\sdl_ttf.h
 	"SDL.h"
+	"begin_code.h"
+	"close_code.h"
+
+1741056808 c:\mingw_dev_lib\sdl_image\include\sdl2\sdl_image.h
+	"SDL.h"
+	"SDL_version.h"
 	"begin_code.h"
 	"close_code.h"
 

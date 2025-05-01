@@ -11,17 +11,21 @@
 *   Dependencies:
 *   - SDL2 library
 *   - SDL_ttf library
+*   - SDL_image library
 *
 *   Compile With:
 *   Find this out I think gcc
 *
 *   Future plans:
 *   Change the score detection from an into to bool.
-*   Directional paddle momentum is transfered to ball
 *   Make the score Centered
+*   Fix Bug where the ball gets stuck inside the Paddle
+*
 *   Find the optimal speed for ball and paddle
 *   Optional: Make the ball speed up the longer its been since someone has socred
 *             Make the messages look better/ flash on screen
+*             Make window size editable
+*             Make the Ball bounce more crazy
 **/
 
 #define SDL_MAIN_HANDLED
@@ -41,12 +45,13 @@ void updateAll();
 void defaultPos();
 void screenImage(char str[]);
 //Sets Constant Screen Width and Height
-const int SCREEN_WIDTH = 700;
+const int SCREEN_WIDTH = 1000;
 const int SCREEN_HEIGHT = 500;
+const int BALL_SPEED = 10;
 //Sets Paddle Constants
 const int PADDLE_HEIGHT = 200;
 const int LPADDLE_X = 100;
-const int RPADDLE_X = 580;
+const int RPADDLE_X = SCREEN_WIDTH - 120;
 const int PADDLE_SPEED = 5;
 //Sets the score and core detection
 int leftScore = 0;
@@ -71,7 +76,7 @@ char filename[50];
 Paddle leftPaddle = {LPADDLE_X, PADDLE_HEIGHT, 20, 100, PADDLE_SPEED};
 Paddle rightPaddle = {RPADDLE_X, PADDLE_HEIGHT, 20, 100, PADDLE_SPEED};
 //Creates ball and gives a location
-Ball ball = {SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 20, 5, 5};
+Ball ball = {SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 20, BALL_SPEED, BALL_SPEED};
 
 //Creates the SDL renderer, texture, and font
 SDL_Renderer* renderer = NULL;
@@ -105,8 +110,8 @@ int main(){
         int xrand = rand();
         int yrand = rand();
 
-        ball.xSpeed = (rand() % 2 == 0) ? 5 : -5;
-        ball.ySpeed = (rand() % 2 == 0) ? 5 : -5;
+        ball.xSpeed = (rand() % 2 == 0) ? ball.xSpeed : -ball.xSpeed;
+        ball.ySpeed = (rand() % 2 == 0) ? ball.ySpeed : -ball.ySpeed;
 
         //Creates the SDL Event we will use for Key presses
         SDL_Event e;
@@ -163,7 +168,7 @@ int main(){
         screenImage(filename);
     }
 
-    SDL_Delay(100);
+    SDL_Delay(1000);
     //Should Hack it to stay up May need to comment
     //SDL_Event e; bool quit = false; while(quit == false){
      //       while(SDL_PollEvent(&e)){if(e.type == SDL_QUIT) quit = true;}}
@@ -287,15 +292,32 @@ void checkBounds(){
     }
     //Detects if the ball hits either paddle
     else{
+        const Uint8* keystates = SDL_GetKeyboardState(NULL);
         if(ballR >= rightPaddle.x && ballL <= rightPaddle.x + 20 && ballT <= rightPaddle.y + 100 && ballB >= rightPaddle.y){
 
-            ball.xSpeed = -ball.xSpeed;
-            ball.ySpeed = -ball.ySpeed;
+            if(keystates[SDL_SCANCODE_DOWN]){
+                ball.xSpeed = -ball.xSpeed;
+                ball.ySpeed = abs(ball.ySpeed);
+            }else if(keystates[SDL_SCANCODE_DOWN]){
+                ball.xSpeed = -ball.xSpeed;
+                ball.ySpeed = -abs(ball.ySpeed);
+            }else{
+                ball.xSpeed = -ball.xSpeed;
+                ball.ySpeed = -ball.ySpeed;
+            }
         }
         if(ballL <= leftPaddle.x + 20 && ballR >= leftPaddle.x && ballT <= leftPaddle.y + 100 && ballB>= leftPaddle.y){
 
-            ball.xSpeed = -ball.xSpeed;
-            ball.ySpeed = -ball.ySpeed;
+            if(keystates[SDL_SCANCODE_S]){
+                ball.xSpeed = -ball.xSpeed;
+                ball.ySpeed = abs(ball.ySpeed);
+            }else if(keystates[SDL_SCANCODE_W]){
+                ball.xSpeed = -ball.xSpeed;
+                ball.ySpeed = -abs(ball.ySpeed);
+            }else{
+                ball.xSpeed = -ball.xSpeed;
+                ball.ySpeed = -ball.ySpeed;
+            }
         }
     }
 
@@ -312,8 +334,8 @@ void defaultPos(){
     ball.x = SCREEN_WIDTH/2;
     ball.y = SCREEN_HEIGHT/2;
     ball.radius = 20;
-    ball.xSpeed = 5;
-    ball.ySpeed = 5;
+    ball.xSpeed = BALL_SPEED;
+    ball.ySpeed = BALL_SPEED;
 
     //Sets left Paddle to default position
     leftPaddle.x = LPADDLE_X;
@@ -342,7 +364,7 @@ void screenImage(char str[50]){
     surface = IMG_Load(str);
     texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
-
+    //Sets the Area the img will be shown in and puts it into the renderer
     SDL_Rect destRect = {50, SCREEN_HEIGHT/4, SCREEN_WIDTH-100, 150};
     SDL_RenderCopy(renderer, texture, NULL, &destRect);
     SDL_RenderPresent(renderer);
