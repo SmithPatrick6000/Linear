@@ -51,7 +51,7 @@ const int RPADDLE_X = 580;
 Paddle leftPaddle = {LPADDLE_X, PADDLE_HEIGHT, 20, 100, 0};
 Paddle rightPaddle = {RPADDLE_X, PADDLE_HEIGHT, 20, 100, 0};
 
-Ball ball = {400, 190, 20, 5, 5};
+Ball ball = {400, 250, 20, 5, 5};
 SDL_Renderer* renderer = NULL;
 
 
@@ -91,7 +91,7 @@ void move(int amount){
     for (int i = 0; i < amount;i++){
         updateAll();
         ball.x += ball.xSpeed;
-        //ball.y += ball.ySpeed;
+        ball.y += ball.ySpeed;
         checkBounds();
     }
 }
@@ -145,16 +145,16 @@ void checkBounds(){
     if(ballR >= SCREEN_WIDTH || -ball.radius + ball.x <= 0){
         ball.xSpeed = -ball.xSpeed;
     }
-    else if(ballT >= SCREEN_HEIGHT || ballB <= 0){
+    else if(ballB >= SCREEN_HEIGHT || ballT <= 0){
         ball.ySpeed = -ball.ySpeed;
     }
     else{
-        if(ballR >= rightPaddle.x && ballT <= rightPaddle.y + 100 && ballB >= rightPaddle.y){
+        if(ballR >= rightPaddle.x && ballL <= rightPaddle.x + 20 && ballT <= rightPaddle.y + 100 && ballB >= rightPaddle.y){
 
             ball.xSpeed = -ball.xSpeed;
             ball.ySpeed = -ball.ySpeed;
         }
-        if(ballL <= leftPaddle.x + 20 && ballT <= leftPaddle.y + 100 && ballB>= leftPaddle.y){
+        if(ballL <= leftPaddle.x + 20 && ballR >= leftPaddle.x && ballT <= leftPaddle.y + 100 && ballB>= leftPaddle.y){
 
             ball.xSpeed = -ball.xSpeed;
             ball.ySpeed = -ball.ySpeed;
