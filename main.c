@@ -1,7 +1,7 @@
 /**
 *   File: main.c (may change name)
 *   Author: Patrick Smith
-*   Last Updated: 4/30/2025
+*   Last Updated: 4/31/2025
 *   Purpose: Simple SDL2 Pong Game
 *
 *   Description:
@@ -10,9 +10,18 @@
 *
 *   Dependencies:
 *   - SDL2 library
+*   - SDL_ttf library
 *
 *   Compile With:
-*   Find this out
+*   Find this out i think gcc
+*
+*   Future plans:
+*   Change the score detection from an into to bool.
+*   Add text for when a player scores and for when a player wins
+*   Directional paddle momentum is transfered to ball
+*   Make the score Centered
+*   Find the optimal speed for ball and paddle
+*   Optional: Make the ball speed up the longer its been since someone has socred
 **/
 
 #define SDL_MAIN_HANDLED
@@ -24,19 +33,20 @@
 #include<time.h>
 #include <SDL_ttf.h>
 
+//Declares all functions used later
 void move();
 void checkBounds();
 void updateAll();
 void defaultPos();
-
+//Sets Constant Screen Width and Height
 const int SCREEN_WIDTH = 700;
 const int SCREEN_HEIGHT = 500;
-
+//Sets Paddle Constants
 const int PADDLE_HEIGHT = 200;
 const int LPADDLE_X = 100;
 const int RPADDLE_X = 580;
 const int PADDLE_SPEED = 5;
-
+//Sets the score and core detection
 int leftScore = 0;
 int rightScore = 0;
 int scoreDetection = 0;
@@ -54,11 +64,13 @@ int scoreDetection = 0;
         int width, length;
         int ySpeed;
     } Paddle;
-
+//Creates left and Right Paddle and gives a location
 Paddle leftPaddle = {LPADDLE_X, PADDLE_HEIGHT, 20, 100, PADDLE_SPEED};
 Paddle rightPaddle = {RPADDLE_X, PADDLE_HEIGHT, 20, 100, PADDLE_SPEED};
-
+//Creates ball and gives a location
 Ball ball = {SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 20, 5, 5};
+
+//Creates the SDL renderer, texture, and font
 SDL_Renderer* renderer = NULL;
 SDL_Texture* texture = NULL;
 TTF_Font* font = NULL;
@@ -70,8 +82,10 @@ int main(){
     SDL_Init(SDL_INIT_VIDEO);
     //Initialize the Text
     TTF_Init();
+    //Creates the window that the game uses
     SDL_Window* window = SDL_CreateWindow("Ball Time", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                 SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    //Makes it so the renderer renders things inside of the window we created
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     //Loads font
     font = TTF_OpenFont("assets/fonts/OpenSans-Regular.ttf", 24);
@@ -79,7 +93,7 @@ int main(){
 //Makes the game end after someone gets 5 points
     while(leftScore != 5 && rightScore != 5){
 
-        //Makes the ball go in a random direction
+        //Makes the ball go in a random direction at the start of each round
 
         int xrand = rand();
         int yrand = rand();
@@ -87,8 +101,9 @@ int main(){
         ball.xSpeed = (rand() % 2 == 0) ? 5 : -5;
         ball.ySpeed = (rand() % 2 == 0) ? 5 : -5;
 
+        //Creates the SDL Event we will use for Key presses
         SDL_Event e;
-        //When someone scores it resets the screen
+        //Runs the game until someonescores
         while(scoreDetection != 1){
             //Detects the keyboard for any presses
             while(SDL_PollEvent(&e)){
@@ -123,13 +138,14 @@ int main(){
 
             move();
         }
+        //Gives a 1 second delay between each round
         SDL_Delay(1000);
-
+        // resets the screen and sets score detection to 0
        defaultPos();
        scoreDetection = 0;
     }
 
-
+    //Clears the Screen to White after the game has been won
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
@@ -139,6 +155,7 @@ int main(){
     //SDL_Event e; bool quit = false; while(quit == false){
      //       while(SDL_PollEvent(&e)){if(e.type == SDL_QUIT) quit = true;}}
 
+    //Destroys all SDL things that were created
     SDL_DestroyTexture(texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
