@@ -34,6 +34,7 @@ const int SCREEN_HEIGHT = 500;
 const int PADDLE_HEIGHT = 200;
 const int LPADDLE_X = 100;
 const int RPADDLE_X = 580;
+const int PADDLE_SPEED = 5;
 
 int leftScore = 0;
 int rightScore = 0;
@@ -53,8 +54,8 @@ int scoreDetection = 0;
         int ySpeed;
     } Paddle;
 
-Paddle leftPaddle = {LPADDLE_X, PADDLE_HEIGHT, 20, 100, 0};
-Paddle rightPaddle = {RPADDLE_X, PADDLE_HEIGHT, 20, 100, 0};
+Paddle leftPaddle = {LPADDLE_X, PADDLE_HEIGHT, 20, 100, PADDLE_SPEED};
+Paddle rightPaddle = {RPADDLE_X, PADDLE_HEIGHT, 20, 100, PADDLE_SPEED};
 
 Ball ball = {SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 20, 5, 5};
 SDL_Renderer* renderer = NULL;
@@ -77,10 +78,45 @@ int main(){
 
         ball.xSpeed = (rand() % 2 == 0) ? 5 : -5;
         ball.ySpeed = (rand() % 2 == 0) ? 5 : -5;
+
+        SDL_Event e;
         //When someone scores it resets the screen
         while(scoreDetection != 1){
+            //Detects the keyboard for any presses
+            while(SDL_PollEvent(&e)){
+                //detects if the application is clsoed
+                if(e.type == SDL_QUIT){
+                exit(0);
+                }
+            }
+            //checks if an appropriate key was pressed
+            const Uint8* keystates = SDL_GetKeyboardState(NULL);
+            //Checks to make sure the Paddle is not going to go out of bounds
+            if(keystates[SDL_SCANCODE_W]){
+                if(!(leftPaddle.y <= 0)){
+                    leftPaddle.y -= leftPaddle.ySpeed;
+                }
+            }
+            if(keystates[SDL_SCANCODE_S]){
+                if(!(leftPaddle.y + 100 >= SCREEN_HEIGHT)){
+                    leftPaddle.y += leftPaddle.ySpeed;
+                }
+            }
+            if(keystates[SDL_SCANCODE_UP]){
+                if(!(rightPaddle.y <= 0)){
+                    rightPaddle.y -= rightPaddle.ySpeed;
+                }
+            }
+            if(keystates[SDL_SCANCODE_DOWN]){
+                if(!(rightPaddle.y + 100 >= SCREEN_HEIGHT)){
+                    rightPaddle.y += rightPaddle.ySpeed;
+                }
+            }
+
             move();
         }
+        SDL_Delay(1000);
+
        defaultPos();
        scoreDetection = 0;
     }
@@ -114,7 +150,7 @@ void move(){
 
     updateAll();
     ball.x += ball.xSpeed;
-    ball.y += ball.ySpeed;
+    //ball.y += ball.ySpeed;
     checkBounds();
 
 }
@@ -199,11 +235,14 @@ void checkBounds(){
     }
 
 
+
 }
 /** \brief Sets Ball and Paddles to starting positions
  *
  */
 void defaultPos(){
+
+
 
     ball.x = SCREEN_WIDTH/2;
     ball.y = SCREEN_HEIGHT/2;
@@ -216,14 +255,14 @@ void defaultPos(){
     leftPaddle.y = PADDLE_HEIGHT;
     leftPaddle.width = 20;
     leftPaddle.length = 100;
-    leftPaddle.ySpeed = 0;
+    leftPaddle.ySpeed = PADDLE_SPEED;
 
 
     rightPaddle.x = RPADDLE_X;
     rightPaddle.y = PADDLE_HEIGHT;
     rightPaddle.width = 20;
     rightPaddle.length = 100;
-    rightPaddle.ySpeed = 0;
+    rightPaddle.ySpeed = PADDLE_SPEED;
 
     updateAll();
 }
