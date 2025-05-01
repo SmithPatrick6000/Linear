@@ -455,11 +455,17 @@
 
 1746057489 source:c:\users\thebu\onedrive\desktop\school\intro to systems\programming assignment\linearfinalproject\ball.c
 
-1746075653 source:c:\users\thebu\onedrive\desktop\school\intro to systems\programming assignment\linearfinalproject\main.c
+1746077847 source:c:\users\thebu\onedrive\desktop\school\intro to systems\programming assignment\linearfinalproject\main.c
 	<SDL.h>
 	<stdio.h>
 	<stdbool.h>
 	<math.h>
 	<stdlib.h>
 	<time.h>
+	<SDL_ttf.h>
+
+1735850788 c:\mingw_dev_lib\sdl2_tff\include\sdl2\sdl_ttf.h
+	"SDL.h"
+	"begin_code.h"
+	"close_code.h"
 

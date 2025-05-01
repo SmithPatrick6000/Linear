@@ -22,6 +22,7 @@
 #include<math.h>
 #include<stdlib.h>
 #include<time.h>
+#include <SDL_ttf.h>
 
 void move();
 void checkBounds();
@@ -59,18 +60,25 @@ Paddle rightPaddle = {RPADDLE_X, PADDLE_HEIGHT, 20, 100, PADDLE_SPEED};
 
 Ball ball = {SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 20, 5, 5};
 SDL_Renderer* renderer = NULL;
-
+SDL_Texture* texture = NULL;
+TTF_Font* font = NULL;
 
 int main(){
     //Seed for rand
     srand(time(NULL));
     //Initialized SDL
     SDL_Init(SDL_INIT_VIDEO);
+    //Initialize the Text
+    TTF_Init();
     SDL_Window* window = SDL_CreateWindow("Ball Time", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                 SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    //Loads font
+    font = TTF_OpenFont("assets/fonts/OpenSans-Regular.ttf", 24);
+
 //Makes the game end after someone gets 5 points
     while(leftScore != 5 && rightScore != 5){
+
         //Makes the ball go in a random direction
 
         int xrand = rand();
@@ -131,7 +139,7 @@ int main(){
     //SDL_Event e; bool quit = false; while(quit == false){
      //       while(SDL_PollEvent(&e)){if(e.type == SDL_QUIT) quit = true;}}
 
-
+    SDL_DestroyTexture(texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -150,7 +158,7 @@ void move(){
 
     updateAll();
     ball.x += ball.xSpeed;
-    //ball.y += ball.ySpeed;
+    ball.y += ball.ySpeed;
     checkBounds();
 
 }
@@ -186,6 +194,24 @@ void updateAll(){
             SDL_RenderDrawPoint(renderer, i, j);
         }
     }
+
+    //Sets text color
+        SDL_Color textColor = {255, 255, 255};
+        char scoreText[50];
+
+        sprintf(scoreText, "%d - %d", leftScore, rightScore);
+        //Sets text
+        SDL_Surface* textSurface = TTF_RenderText_Solid(font, scoreText, textColor);
+        //Combines to surface
+        texture = SDL_CreateTextureFromSurface(renderer, textSurface);
+
+        SDL_Rect textRect;
+        textRect.x = SCREEN_WIDTH/2;
+        textRect.y = 20;
+        textRect.w = textSurface->w;
+        textRect.h = textSurface->h;
+        SDL_RenderCopy(renderer, texture, NULL, &textRect);
+
     SDL_Delay(5);
     SDL_RenderPresent(renderer);
 }
