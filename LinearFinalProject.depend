@@ -455,3 +455,8 @@
 
 1746057489 source:c:\users\thebu\onedrive\desktop\school\intro to systems\programming assignment\linearfinalproject\ball.c
 
+1746059383 source:c:\users\thebu\onedrive\desktop\school\intro to systems\programming assignment\linearfinalproject\main.c
+	<SDL.h>
+	<stdio.h>
+	<stdbool.h>
+
