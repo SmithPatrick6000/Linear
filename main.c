@@ -19,14 +19,19 @@
 #include<SDL.h>
 #include<stdio.h>
 #include<stdbool.h>
+#include<math.h>
 
 void move(int amount);
 void checkBounds();
-void updateBall();
+void updateAll();
 
 
 const int SCREEN_WIDTH = 700;
 const int SCREEN_HEIGHT = 500;
+
+const int PADDLE_HEIGHT = 200;
+const int LPADDLE_X = 100;
+const int RPADDLE_X = 580;
 
 
 //creates Ball Structure
@@ -35,8 +40,20 @@ const int SCREEN_HEIGHT = 500;
         int radius;
         int xSpeed, ySpeed;
     } Ball;
-Ball ball = {400, 300, 20, 5, 5};
+
+//creates Paddle Structure
+    typedef struct {
+        int x, y;
+        int width, length;
+        int ySpeed;
+    } Paddle;
+
+Paddle leftPaddle = {LPADDLE_X, PADDLE_HEIGHT, 20, 100, 0};
+Paddle rightPaddle = {RPADDLE_X, PADDLE_HEIGHT, 20, 100, 0};
+
+Ball ball = {400, 190, 20, 5, 5};
 SDL_Renderer* renderer = NULL;
+
 
 int main(){
     //Initialized SDL
@@ -44,6 +61,8 @@ int main(){
     SDL_Window* window = SDL_CreateWindow("Ball Time", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                 SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+
 
     move(1000);
 
@@ -70,9 +89,9 @@ int main(){
 
 void move(int amount){
     for (int i = 0; i < amount;i++){
-        updateBall();
+        updateAll();
         ball.x += ball.xSpeed;
-        ball.y += ball.ySpeed;
+        //ball.y += ball.ySpeed;
         checkBounds();
     }
 }
@@ -81,7 +100,7 @@ Draws the ball using the ball radius and ball location
 small delay to see the movement better
 Updates the renderer
 */
-void updateBall(){
+void updateAll(){
     //Clear Screen
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
@@ -95,19 +114,54 @@ void updateBall(){
                 }
         }
     }
-    SDL_Delay(10);
+    //Updates Left Paddle
+
+    for(int i = leftPaddle.x; i <= leftPaddle.x + leftPaddle.width; i++){
+        for(int j = leftPaddle.y; j <= leftPaddle.y + leftPaddle.length; j++){
+            SDL_RenderDrawPoint(renderer, i, j);
+        }
+    }
+    //Updates Right Paddle
+    for(int i = rightPaddle.x; i <= rightPaddle.x + rightPaddle.width; i++){
+        for(int j = rightPaddle.y; j <= rightPaddle.y + rightPaddle.length; j++){
+            SDL_RenderDrawPoint(renderer, i, j);
+        }
+    }
+    SDL_Delay(5);
     SDL_RenderPresent(renderer);
 }
 /*Checks if the balls radius + the balls location is equal to the bounds of the machine
 If it is it reverses the speed*/
 void checkBounds(){
     //Game Section
-    if(ball.radius + ball.x >= SCREEN_WIDTH || -ball.radius + ball.x <= 0){
+    int ballR = ball.radius + ball.x;
+    int ballL = -ball.radius + ball.x;
+
+    int ballT = -ball.radius + ball.y;
+    int ballB = ball.radius + ball.y;
+
+
+
+    if(ballR >= SCREEN_WIDTH || -ball.radius + ball.x <= 0){
         ball.xSpeed = -ball.xSpeed;
     }
-    if(ball.radius + ball.y >= SCREEN_HEIGHT || -ball.radius + ball.y <= 0){
+    else if(ballT >= SCREEN_HEIGHT || ballB <= 0){
         ball.ySpeed = -ball.ySpeed;
     }
+    else{
+        if(ballR >= rightPaddle.x && ballT <= rightPaddle.y + 100 && ballB >= rightPaddle.y){
+
+            ball.xSpeed = -ball.xSpeed;
+            ball.ySpeed = -ball.ySpeed;
+        }
+        if(ballL <= leftPaddle.x + 20 && ballT <= leftPaddle.y + 100 && ballB>= leftPaddle.y){
+
+            ball.xSpeed = -ball.xSpeed;
+            ball.ySpeed = -ball.ySpeed;
+        }
+    }
+
+
 }
 
 
