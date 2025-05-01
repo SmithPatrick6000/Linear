@@ -13,15 +13,15 @@
 *   - SDL_ttf library
 *
 *   Compile With:
-*   Find this out i think gcc
+*   Find this out I think gcc
 *
 *   Future plans:
 *   Change the score detection from an into to bool.
-*   Add text for when a player scores and for when a player wins
 *   Directional paddle momentum is transfered to ball
 *   Make the score Centered
 *   Find the optimal speed for ball and paddle
 *   Optional: Make the ball speed up the longer its been since someone has socred
+*             Make the messages look better/ flash on screen
 **/
 
 #define SDL_MAIN_HANDLED
@@ -32,12 +32,14 @@
 #include<stdlib.h>
 #include<time.h>
 #include <SDL_ttf.h>
+#include<SDL_image.h>
 
 //Declares all functions used later
 void move();
 void checkBounds();
 void updateAll();
 void defaultPos();
+void screenImage(char str[]);
 //Sets Constant Screen Width and Height
 const int SCREEN_WIDTH = 700;
 const int SCREEN_HEIGHT = 500;
@@ -50,7 +52,8 @@ const int PADDLE_SPEED = 5;
 int leftScore = 0;
 int rightScore = 0;
 int scoreDetection = 0;
-
+//Creates String to hold filenames
+char filename[50];
 //creates Ball Structure
     typedef struct {
         int x, y;
@@ -74,6 +77,7 @@ Ball ball = {SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 20, 5, 5};
 SDL_Renderer* renderer = NULL;
 SDL_Texture* texture = NULL;
 TTF_Font* font = NULL;
+SDL_Surface* surface = NULL;
 
 int main(){
     //Seed for rand
@@ -82,6 +86,9 @@ int main(){
     SDL_Init(SDL_INIT_VIDEO);
     //Initialize the Text
     TTF_Init();
+    //Initialize Img
+    IMG_Init(IMG_INIT_PNG);
+
     //Creates the window that the game uses
     SDL_Window* window = SDL_CreateWindow("Ball Time", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                 SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
@@ -145,10 +152,16 @@ int main(){
        scoreDetection = 0;
     }
 
-    //Clears the Screen to White after the game has been won
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
+    //Clears the Screen to White after the game has been won and displays a message
+    if(leftScore == 5){
+        filename[0] = '\0';
+        strcpy(filename, "assets/images/Player1Wins.png");
+        screenImage(filename);
+    }else{
+        filename[0] = '\0';
+        strcpy(filename, "assets/images/Player2Wins.png");
+        screenImage(filename);
+    }
 
     SDL_Delay(100);
     //Should Hack it to stay up May need to comment
@@ -159,13 +172,13 @@ int main(){
     SDL_DestroyTexture(texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    IMG_Quit();
     SDL_Quit();
     return 0;
 }
 /** \brief Moves the ball a specified amount of times by adding the speed
  *  (xSpeed / ySpeed) to the balls x or y position
  *
- * \param int amount
  * amount of times the ball will move
  * \return void
  *
@@ -180,6 +193,8 @@ void move(){
 
 }
 /*Clears the renderer
+Draws Paddles at new location
+Updates score
 Draws the ball using the ball radius and ball location
 small delay to see the movement better
 Updates the renderer
@@ -253,9 +268,16 @@ void checkBounds(){
     if(ballR >= SCREEN_WIDTH || -ball.radius + ball.x <= 0){
         if(ballR >= SCREEN_WIDTH){
             leftScore += 1;
+            filename[0] = '\0';
+            strcpy(filename, "assets/images/Player1Scores.png");
+            screenImage(filename);
+
         }
         else{
             rightScore += 1;
+            filename[0] = '\0';
+            strcpy(filename, "assets/images/Player2Scores.png");
+            screenImage(filename);
         }
         scoreDetection += 1;
     }
@@ -286,28 +308,43 @@ void checkBounds(){
 void defaultPos(){
 
 
-
+    //Sets ball to default position
     ball.x = SCREEN_WIDTH/2;
     ball.y = SCREEN_HEIGHT/2;
     ball.radius = 20;
     ball.xSpeed = 5;
     ball.ySpeed = 5;
 
-
+    //Sets left Paddle to default position
     leftPaddle.x = LPADDLE_X;
     leftPaddle.y = PADDLE_HEIGHT;
     leftPaddle.width = 20;
     leftPaddle.length = 100;
     leftPaddle.ySpeed = PADDLE_SPEED;
 
-
+    //Sets right Paddle to default position
     rightPaddle.x = RPADDLE_X;
     rightPaddle.y = PADDLE_HEIGHT;
     rightPaddle.width = 20;
     rightPaddle.length = 100;
     rightPaddle.ySpeed = PADDLE_SPEED;
 
+    //Sets all things to new position
     updateAll();
 }
 
+void screenImage(char str[50]){
+    //Sets Screen White
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);
+    SDL_RenderPresent(renderer);
+    //Sets image to inputted string path
+    surface = IMG_Load(str);
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+
+    SDL_Rect destRect = {50, SCREEN_HEIGHT/4, SCREEN_WIDTH-100, 150};
+    SDL_RenderCopy(renderer, texture, NULL, &destRect);
+    SDL_RenderPresent(renderer);
+}
 
