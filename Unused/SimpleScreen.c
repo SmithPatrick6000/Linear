@@ -4,8 +4,8 @@
 #include<stdbool.h>
 
 //Screen dimension
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+const int SIMPLE_SCREEN_WIDTH = 640;
+const int SIMPLE_SCREEN_HEIGHT = 480;
 
 //simpleScreen function that maybe works
 
@@ -23,7 +23,7 @@ int simpleScreen(int argc, char* args[]){
     else{
         //Creates Window
         window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+                                SIMPLE_SCREEN_WIDTH, SIMPLE_SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
         if(window == NULL){
             printf("Window could not be created! SDL_ERROR: %s\n", SDL_GetError());
         }
