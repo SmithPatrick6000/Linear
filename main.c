@@ -1,3 +1,20 @@
+/**
+*   File: main.c (may change name)
+*   Author: Patrick Smith
+*   Last Updated: 4/30/2025
+*   Purpose: Simple SDL2 Pong Game
+*
+*   Description:
+*   This program makes a simple Pong game
+*   Add more info later
+*
+*   Dependencies:
+*   - SDL2 library
+*
+*   Compile With:
+*   Find this out
+**/
+
 #define SDL_MAIN_HANDLED
 #include<SDL.h>
 #include<stdio.h>
@@ -42,6 +59,15 @@ int main(){
     SDL_Quit();
     return 0;
 }
+/** \brief Moves the ball a specified amount of times by adding the speed
+ *  (xSpeed / ySpeed) to the balls x or y position
+ *
+ * \param int amount
+ * amount of times the ball will move
+ * \return void
+ *
+ */
+
 void move(int amount){
     for (int i = 0; i < amount;i++){
         updateBall();
@@ -50,6 +76,11 @@ void move(int amount){
         checkBounds();
     }
 }
+/*Clears the renderer
+Draws the ball using the ball radius and ball location
+small delay to see the movement better
+Updates the renderer
+*/
 void updateBall(){
     //Clear Screen
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -64,14 +95,17 @@ void updateBall(){
                 }
         }
     }
+    SDL_Delay(10);
     SDL_RenderPresent(renderer);
 }
+/*Checks if the balls radius + the balls location is equal to the bounds of the machine
+If it is it reverses the speed*/
 void checkBounds(){
     //Game Section
-    if(ball.radius + ball.x >= SCREEN_WIDTH || ball.radius + ball.x <= 0){
+    if(ball.radius + ball.x >= SCREEN_WIDTH || -ball.radius + ball.x <= 0){
         ball.xSpeed = -ball.xSpeed;
     }
-    if(ball.radius + ball.y >= SCREEN_HEIGHT || ball.radius + ball.y <= 0){
+    if(ball.radius + ball.y >= SCREEN_HEIGHT || -ball.radius + ball.y <= 0){
         ball.ySpeed = -ball.ySpeed;
     }
 }
