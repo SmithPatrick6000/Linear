@@ -47,7 +47,7 @@ void screenImage(char str[]);
 //Sets Constant Screen Width and Height
 const int SCREEN_WIDTH = 1000;
 const int SCREEN_HEIGHT = 500;
-const int BALL_SPEED = 10;
+const int BALL_SPEED = 5;
 //Sets Paddle Constants
 const int PADDLE_HEIGHT = 200;
 const int LPADDLE_X = 100;
@@ -291,29 +291,36 @@ void checkBounds(){
         ball.ySpeed = -ball.ySpeed;
     }
     //Detects if the ball hits either paddle
+    //Makes the ball move according to what the paddle that hits it is doing
     else{
+        //Tracks the keystates
         const Uint8* keystates = SDL_GetKeyboardState(NULL);
-        if(ballR >= rightPaddle.x && ballL <= rightPaddle.x + 20 && ballT <= rightPaddle.y + 100 && ballB >= rightPaddle.y){
 
+        if(ballR >= rightPaddle.x && ballL <= rightPaddle.x + 20 && ballT <= rightPaddle.y + 100 && ballB >= rightPaddle.y){
+            //If the paddle is moving down the ball will also move down after hitting it
             if(keystates[SDL_SCANCODE_DOWN]){
                 ball.xSpeed = -ball.xSpeed;
                 ball.ySpeed = abs(ball.ySpeed);
-            }else if(keystates[SDL_SCANCODE_DOWN]){
+                //If the paddle is moving up the ball will go up
+            }else if(keystates[SDL_SCANCODE_UP]){
                 ball.xSpeed = -ball.xSpeed;
                 ball.ySpeed = -abs(ball.ySpeed);
+                //If the paddle is not moving the direction of the ball is reversed
             }else{
                 ball.xSpeed = -ball.xSpeed;
                 ball.ySpeed = -ball.ySpeed;
             }
         }
         if(ballL <= leftPaddle.x + 20 && ballR >= leftPaddle.x && ballT <= leftPaddle.y + 100 && ballB>= leftPaddle.y){
-
+            //If the paddle is moving down the ball will also move down after hitting it
             if(keystates[SDL_SCANCODE_S]){
                 ball.xSpeed = -ball.xSpeed;
                 ball.ySpeed = abs(ball.ySpeed);
+                //If the paddle is moving up the ball will go up
             }else if(keystates[SDL_SCANCODE_W]){
                 ball.xSpeed = -ball.xSpeed;
                 ball.ySpeed = -abs(ball.ySpeed);
+                //If the paddle is not moving the direction of the ball is reversed
             }else{
                 ball.xSpeed = -ball.xSpeed;
                 ball.ySpeed = -ball.ySpeed;
@@ -354,6 +361,11 @@ void defaultPos(){
     //Sets all things to new position
     updateAll();
 }
+/** \brief Displays the image file from the file directory that is input
+ *
+ * \param char str[50]  Is basically a string
+ *
+ */
 
 void screenImage(char str[50]){
     //Sets Screen White
