@@ -1,12 +1,12 @@
 /**
 *   File: main.c (may change name)
 *   Author: Patrick Smith
-*   Last Updated: 4/31/2025
+*   Last Updated: __DATE__ at __TIME__      No idea if this works
 *   Purpose: Simple SDL2 Pong Game
 *
 *   Description:
-*   This program makes a simple Pong game
-*   Add more info later
+*   This program makes a simple Pong game.
+*   Plan to add more as I learn how to do more
 *
 *   Dependencies:
 *   - SDL2 library
@@ -57,6 +57,9 @@ const int PADDLE_SPEED = 5;
 int leftScore = 0;
 int rightScore = 0;
 int scoreDetection = 0;
+//Creates a variable to check if the ball got stuck (There is definitely a better way to do this)
+int leftStuck = 0;
+int rightStuck = 0;
 //Creates String to hold filenames
 char filename[50];
 //creates Ball Structure
@@ -297,33 +300,48 @@ void checkBounds(){
         const Uint8* keystates = SDL_GetKeyboardState(NULL);
 
         if(ballR >= rightPaddle.x && ballL <= rightPaddle.x + 20 && ballT <= rightPaddle.y + 100 && ballB >= rightPaddle.y){
-            //If the paddle is moving down the ball will also move down after hitting it
-            if(keystates[SDL_SCANCODE_DOWN]){
-                ball.xSpeed = -ball.xSpeed;
-                ball.ySpeed = abs(ball.ySpeed);
-                //If the paddle is moving up the ball will go up
-            }else if(keystates[SDL_SCANCODE_UP]){
-                ball.xSpeed = -ball.xSpeed;
-                ball.ySpeed = -abs(ball.ySpeed);
-                //If the paddle is not moving the direction of the ball is reversed
-            }else{
-                ball.xSpeed = -ball.xSpeed;
+            leftStuck = 0;
+            //Fixes the ball stuck problem
+            if(rightStuck > 0){
+                ball.xSpeed = -abs(ball.xSpeed);
                 ball.ySpeed = -ball.ySpeed;
+            }else{
+                rightStuck++;
+                //If the paddle is moving down the ball will also move down after hitting it
+                if(keystates[SDL_SCANCODE_DOWN]){
+                    ball.xSpeed = -ball.xSpeed;
+                    ball.ySpeed = abs(ball.ySpeed);
+                //If the paddle is moving up the ball will go up
+                }else if(keystates[SDL_SCANCODE_UP]){
+                    ball.xSpeed = -ball.xSpeed;
+                    ball.ySpeed = -abs(ball.ySpeed);
+                //If the paddle is not moving the direction of the ball is reversed
+                }else{
+                    ball.xSpeed = -ball.xSpeed;
+                    ball.ySpeed = -ball.ySpeed;
+                }
             }
         }
         if(ballL <= leftPaddle.x + 20 && ballR >= leftPaddle.x && ballT <= leftPaddle.y + 100 && ballB>= leftPaddle.y){
-            //If the paddle is moving down the ball will also move down after hitting it
-            if(keystates[SDL_SCANCODE_S]){
-                ball.xSpeed = -ball.xSpeed;
-                ball.ySpeed = abs(ball.ySpeed);
-                //If the paddle is moving up the ball will go up
-            }else if(keystates[SDL_SCANCODE_W]){
-                ball.xSpeed = -ball.xSpeed;
-                ball.ySpeed = -abs(ball.ySpeed);
-                //If the paddle is not moving the direction of the ball is reversed
-            }else{
-                ball.xSpeed = -ball.xSpeed;
+            rightStuck = 0;
+            if(leftStuck > 0){
+                ball.xSpeed = abs(ball.xSpeed);
                 ball.ySpeed = -ball.ySpeed;
+            }else{
+                leftStuck++;
+            //If the paddle is moving down the ball will also move down after hitting it
+                if(keystates[SDL_SCANCODE_S]){
+                    ball.xSpeed = -ball.xSpeed;
+                    ball.ySpeed = abs(ball.ySpeed);
+                //If the paddle is moving up the ball will go up
+                }else if(keystates[SDL_SCANCODE_W]){
+                    ball.xSpeed = -ball.xSpeed;
+                    ball.ySpeed = -abs(ball.ySpeed);
+                //If the paddle is not moving the direction of the ball is reversed
+                }else{
+                    ball.xSpeed = -ball.xSpeed;
+                    ball.ySpeed = -ball.ySpeed;
+                }
             }
         }
     }
@@ -377,7 +395,7 @@ void screenImage(char str[50]){
     texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
     //Sets the Area the img will be shown in and puts it into the renderer
-    SDL_Rect destRect = {50, SCREEN_HEIGHT/4, SCREEN_WIDTH-100, 150};
+    SDL_Rect destRect = {SCREEN_WIDTH/3, SCREEN_HEIGHT/3, SCREEN_WIDTH/3, SCREEN_HEIGHT/4};
     SDL_RenderCopy(renderer, texture, NULL, &destRect);
     SDL_RenderPresent(renderer);
 }
