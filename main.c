@@ -19,7 +19,10 @@
 *   Future plans:
 *   Change the score detection from an into to bool.
 *   Make the score Centered
-*   Fix Bug where the ball gets stuck inside the Paddle
+*   Fix Bug where the ball gets stuck inside the Paddle(Kinda fixed)
+*   Make keystates get tracked better
+*
+*   IMPORTANT:  Re-Activate Image display after project presentation is done  (Inside of win for main and checkBounds)
 *
 *   Find the optimal speed for ball and paddle
 *   Optional: Make the ball speed up the longer its been since someone has socred
@@ -153,22 +156,26 @@ int main(){
 
             move();
         }
-        //Gives a 1 second delay between each round
-        SDL_Delay(1000);
-        // resets the screen and sets score detection to 0
-       defaultPos();
-       scoreDetection = 0;
+        //resets the screen
+        defaultPos();
+        const Uint8* keystates = SDL_GetKeyboardState(NULL);
+        while(!keystates[SDL_SCANCODE_SPACE]){
+            SDL_PumpEvents();
+           keystates = SDL_GetKeyboardState(NULL);
+           SDL_Delay(100);
+        }
+        scoreDetection = 0;
     }
 
     //Clears the Screen to White after the game has been won and displays a message
     if(leftScore == 5){
         filename[0] = '\0';
         strcpy(filename, "assets/images/Player1Wins.png");
-        screenImage(filename);
+        //screenImage(filename);
     }else{
         filename[0] = '\0';
         strcpy(filename, "assets/images/Player2Wins.png");
-        screenImage(filename);
+        //screenImage(filename);
     }
 
     SDL_Delay(1000);
@@ -278,14 +285,14 @@ void checkBounds(){
             leftScore += 1;
             filename[0] = '\0';
             strcpy(filename, "assets/images/Player1Scores.png");
-            screenImage(filename);
+            //screenImage(filename);
 
         }
         else{
             rightScore += 1;
             filename[0] = '\0';
             strcpy(filename, "assets/images/Player2Scores.png");
-            screenImage(filename);
+            //screenImage(filename);
         }
         scoreDetection += 1;
     }
